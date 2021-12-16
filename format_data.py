@@ -1,4 +1,5 @@
 import pandas as pd;
+import json;
 
 def get_age_range(age_mo: float):
     age_yr_ranges = [1, 4, 9, 14, 19, 31, 51, 70];
@@ -39,9 +40,12 @@ def load_and_format_data(path):
         pathname = path + 'DRI_' + doc + '2021.xls';
         nutrient_table= pd.read_excel(pathname);
         #print(nutrient_table);
-        tmp = nutrient_table.keys();
+        nutrient_keys = nutrient_table.keys().to_list();
+        for i in range(0, len(nutrient_keys)):
+            nutrient_keys[i] = nutrient_keys[i].replace("\n", " ");
+        print(nutrient_keys);
+        nutrient_table.set_axis(nutrient_keys, axis='columns', inplace=True);
         #print(tmp);
-
         # reorganize the data and make it readable
         rdi_data[doc] = {};
         life_stage = "";
@@ -54,10 +58,17 @@ def load_and_format_data(path):
             # data for each age group for each life stage
             else:
                 age = row[1];
-                print(age);
                 rdi_data[doc][life_stage][age] = nutrient_table.iloc[index, 2:].to_dict();
-    print(rdi_data[doc]);
+    
+    # Pretty Print JSON
+    json_formatted_str = json.dumps(rdi_data, indent=4)
+    print(json_formatted_str)
+    #print(rdi_data[doc]);
 
 
         
     #print(row);
+
+
+path = "~/Documents/";
+rdi_data = load_and_format_data(path);
