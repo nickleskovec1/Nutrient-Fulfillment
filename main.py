@@ -3,6 +3,7 @@ import json
 import ndjson
 import tkinter as tk
 from tkinter import *
+import tkinter.font as tkFont
 
 
 class Nutrition:
@@ -13,11 +14,10 @@ class Nutrition:
 
     def __str__(self):
         ret_str = ""
-        print(self.nutrients)
         for key, value in self.nutrients.items():
-            ret_str += key[3::].replace("_", " ") + ": "
-            ret_str += ("{:.2f}" + " compared with daily value of " + "{} -> {:.2%}" + "\n")\
-                .format(value, self.daily[key], value/self.daily[key])
+            nutrient = key[3::].replace("_", " ")
+            ret_str += ("{:<18}" + ": " + "{:<8.2f}" + "{:<4} -> {:<5.2%}" + "\n")\
+                .format(nutrient, value, self.daily[key], value/self.daily[key])
         return ret_str
 
 
@@ -74,6 +74,9 @@ def make_request1(event=None):
     today_nutrition = Nutrition(daily_nutrition, fda_nut_values)
     sti = today_nutrition.__str__()
     change_text(sti)
+    headline.config(text="{}".format(w.get()))
+    table_headers.config(text="{:<18} {:<8} {:<8} {:<5}".format("Nutrient", "Consumed", "DV", "%DV"), justify=LEFT)
+    w.delete(0, END)
     del today_nutrition
 
     # with open("test.json", "w") as f:
@@ -89,11 +92,17 @@ fda_nut_values = init_nutrition(flag=1)
 
 
 m = tk.Tk()
-w = Entry(m, font="Calibri 45")
+fontStyle = tkFont.Font(family="TkFixedFont", size=30)
+default_font = tkFont.nametofont("TkFixedFont")
+default_font.configure(size=21)
+w = Entry(m, font="TkFixedFont 45")
 w.bind("<Return>", make_request1)
-w.grid(row=0, column=2)
-lab = tk.Label(m,text="Enter in food items and hit Enter", font="Calibri 20")
-
+w.grid(row=0, column=0)
+lab = tk.Label(m,text="Enter in food items and hit Enter", font="TkFixedFont", justify=LEFT)
+headline = tk.Label(m,text="", font="TkFixedFont")
+headline.grid(row=1, column=0)
+table_headers = tk.Label(m, text="", font="TkFixedFont", justify=LEFT, anchor="w")
+table_headers.grid()
 lab.grid()
 m.mainloop()
 
