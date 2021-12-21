@@ -1,5 +1,34 @@
 import pandas as pd;
 import json;
+import os;
+from enum import Enum, auto;
+import csv;
+
+
+# https://ods.od.nih.gov/HealthInformation/Dietary_Reference_Intakes.aspx
+
+os.environ['PYTHONIOENCODING'] = 'UTF-8';
+
+# recommended daily allowance vs adequate intake
+class Recommend_Type(Enum):
+    RDA = auto()
+    AI = auto()
+
+
+def read_nutrient_code_to_nutrient_file(filename: str);
+    # opening the CSV file
+    with open(filename, mode ='r') as file:
+    
+        # reading the CSV file
+        csvFile = csv.reader(file)
+        
+        attr_id_to_index = {};
+        index = 0;
+        # displaying the contents of the CSV file
+        for line in csvFile:
+            attr_id_to_index[line[0]] = index;
+            index += index;
+        return [csvFile, attr_id_to_index];
 
 def get_age_range(age_mo: float):
     age_yr_ranges = [1, 4, 9, 14, 19, 31, 51, 70];
@@ -43,6 +72,7 @@ def load_and_format_data(path):
         nutrient_keys = nutrient_table.keys().to_list();
         for i in range(0, len(nutrient_keys)):
             nutrient_keys[i] = nutrient_keys[i].replace("\n", " ");
+        nutrient_table.replace(to_replace=r'(.+)\*$', value=)
         print(nutrient_keys);
         nutrient_table.set_axis(nutrient_keys, axis='columns', inplace=True);
         #print(tmp);
