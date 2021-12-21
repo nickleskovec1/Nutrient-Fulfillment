@@ -1,9 +1,11 @@
 import requests
 import json
-import ndjson
+import format_data;
+#import ndjson
 import tkinter as tk
 from tkinter import *
 
+# run as 'python -m main' -> in order to include cwd in sys.path for module search
 
 class Nutrition:
 
@@ -66,12 +68,32 @@ def make_request1(event=None):
     query = dict()
     query["query"] = w.get()
     res = requests.post("https://trackapi.nutritionix.com/v2/natural/nutrients", data=query, headers=header).json()
-    foods = res["foods"]
+    
+    
+    # get nutrient codes to names
+
+    # get nutrient codes to line number in nutrient file data
+    [file_data, nutrient_id_mapping] = format_data.read_nutrient_code_to_nutrient_file("/home/mary/Documents/Nutritionix_API_v2_USDA_Nutrient_Mapping.csv");
+    
+    # nutrients that are in the requested query
+    nutrient_id_value_pairs = res["foods"][0]["full_nutrients"];
+    for nutrient_id_value_pair in nutrient_id_value_pairs:
+        nutrient_id = nutrient_id_value_pair["attr_id"];
+        index = nutrient_id_mapping[str(nutrient_id)];
+        nutrient_name = file_data[index][3];
+
+
+
+    foods = res["foods"];
+
     for food in foods:
         for key in daily_nutrition:
             if food[key]:  # Check for null value
                 daily_nutrition[key] += food[key]
     today_nutrition = Nutrition(daily_nutrition, fda_nut_values)
+
+    #for nutrient in nutrients:
+
     sti = today_nutrition.__str__()
     change_text(sti)
     del today_nutrition

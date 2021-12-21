@@ -15,7 +15,9 @@ class Recommend_Type(Enum):
     AI = auto()
 
 
-def read_nutrient_code_to_nutrient_file(filename: str);
+def read_nutrient_code_to_nutrient_file(filename: str):
+    file_data = [];
+
     # opening the CSV file
     with open(filename, mode ='r') as file:
     
@@ -26,9 +28,10 @@ def read_nutrient_code_to_nutrient_file(filename: str);
         index = 0;
         # displaying the contents of the CSV file
         for line in csvFile:
+            file_data.append(line);
             attr_id_to_index[line[0]] = index;
-            index += index;
-        return [csvFile, attr_id_to_index];
+            index += 1;
+        return [file_data, attr_id_to_index];
 
 def get_age_range(age_mo: float):
     age_yr_ranges = [1, 4, 9, 14, 19, 31, 51, 70];
@@ -63,19 +66,33 @@ def get_rdi_data(rdi_data, life_stage: str, age_range: str):
 
 
 def load_and_format_data(path):
+
     table_docs = ['elements', 'vitamins', 'macronutrients'];
     rdi_data = {};
     for doc in table_docs:
+
+        # get full name of file
         pathname = path + 'DRI_' + doc + '2021.xls';
+
+        # read in file as dataframe
         nutrient_table= pd.read_excel(pathname);
-        #print(nutrient_table);
+
+        # get the names of each nutrient - need to edit some
         nutrient_keys = nutrient_table.keys().to_list();
+
+        # editting nutrient keys - remove newlines
         for i in range(0, len(nutrient_keys)):
             nutrient_keys[i] = nutrient_keys[i].replace("\n", " ");
-        nutrient_table.replace(to_replace=r'(.+)\*$', value=)
-        print(nutrient_keys);
+
+        # for all numeric values in table remove '*' at end of 
+        # value and indicate that this is an adequate intake vs
+        # an RDI
+        #nutrient_table.replace(to_replace=r'(.+)\*$', value=)
+
+        # replace the nutrient keys with editted versions
         nutrient_table.set_axis(nutrient_keys, axis='columns', inplace=True);
-        #print(tmp);
+
+
         # reorganize the data and make it readable
         rdi_data[doc] = {};
         life_stage = "";
@@ -92,12 +109,8 @@ def load_and_format_data(path):
     
     # Pretty Print JSON
     json_formatted_str = json.dumps(rdi_data, indent=4)
-    print(json_formatted_str)
-    #print(rdi_data[doc]);
+    #print(json_formatted_str)
 
-
-        
-    #print(row);
 
 
 path = "~/Documents/";
